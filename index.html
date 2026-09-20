@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blood Report Analysis AI — Connected Healthcare Platform</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Chart.js for Biomarker Trend Visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ========================================================= -->
+  <!-- TOP APP HEADER & ROLE SWITCHER                            -->
+  <!-- ========================================================= -->
+  <header class="app-header">
+    <div class="logo-container">
+      <div class="logo-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <h1>HEMA-NET AI</h1>
+        <p>Connected Healthcare & Blood Analytics Platform • V1.1</p>
+      </div>
+    </div>
+
+    <!-- Persona Switcher -->
+    <nav class="role-nav">
+      <button class="role-btn active" id="btn-role-patient" onclick="switchRole('patient')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Patient Portal
+      </button>
+      <button class="role-btn" id="btn-role-lab" onclick="switchRole('lab')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/></svg>
+        Laboratory
+      </button>
+      <button class="role-btn" id="btn-role-doctor" onclick="switchRole('doctor')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.8 2.3A.3.3 0 0 0 4.5 2.6v7.7c0 2.5 1.5 4.7 3.8 5.4.6.2 1.2.3 1.7.3s1.1-.1 1.7-.3c2.3-.7 3.8-2.9 3.8-5.4V2.6a.3.3 0 0 0-.3-.3h-2.1a.3.3 0 0 0-.3.3v7.4c0 .8-.5 1.6-1.3 1.9-.4.2-.9.2-1.3 0-.8-.3-1.3-1.1-1.3-1.9V2.6a.3.3 0 0 0-.3-.3H4.8z"/><path d="M11.5 16.5v2.8a2.7 2.7 0 0 0 2.7 2.7h.3a2.7 2.7 0 0 0 2.7-2.7v-2.8"/></svg>
+        Doctor Portal
+      </button>
+      <button class="role-btn" id="btn-role-admin" onclick="switchRole('admin')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 7h10M7 12h10M7 17h10"/></svg>
+        Audit & Security
+      </button>
+      <button class="role-btn" id="btn-role-pipeline" onclick="switchRole('pipeline')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        AI Pipeline Engine
+      </button>
+    </nav>
+  </header>
+
+  <!-- ========================================================= -->
+  <!-- MAIN LAYOUT & VIEWS                                       -->
+  <!-- ========================================================= -->
+  <main class="main-layout">
+
+    <!-- ======================================================= -->
+    <!-- VIEW 1: PATIENT PORTAL (Rahul Sharma)                   -->
+    <!-- ======================================================= -->
+    <section id="view-patient" class="view-section active">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">
+            <span>Rahul Sharma</span>
+            <span class="badge badge-emerald">Verified Central Identity</span>
+          </h2>
+          <p class="section-subtitle">Patient Central ID: <strong id="patient-id-display" class="text-cyan">PX123456</strong> • Complete Healthcare Records & Privacy Control Center</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+          <button class="btn btn-primary" onclick="openVisitOtpModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Generate Visit Consent OTP / QR
+          </button>
+          <button class="btn" onclick="openGrantDoctorModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+            Grant Doctor Access
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="grid-4" style="margin-bottom: 2rem;">
+        <div class="glass-card">
+          <p style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">CONNECTED LABS</p>
+          <h3 style="font-size: 1.8rem; font-weight: 700; margin-top: 0.25rem;">3 Labs</h3>
+          <p style="font-size: 0.75rem; color: var(--cyan-primary); margin-top: 0.25rem;">Apex, Metro, HealthLine</p>
+        </div>
+        <div class="glass-card">
+          <p style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">TOTAL REPORTS</p>
+          <h3 style="font-size: 1.8rem; font-weight: 700; margin-top: 0.25rem;" id="patient-report-count">3 Reports</h3>
+          <p style="font-size: 0.75rem; color: var(--emerald-primary); margin-top: 0.25rem;">Structured & Verified</p>
+        </div>
+        <div class="glass-card">
+          <p style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">ACTIVE DOCTOR GRANTS</p>
+          <h3 style="font-size: 1.8rem; font-weight: 700; margin-top: 0.25rem;" id="active-doctor-count">2 Doctors</h3>
+          <p style="font-size: 0.75rem; color: var(--violet-primary); margin-top: 0.25rem;">Scoped & Time-bound</p>
+        </div>
+        <div class="glass-card">
+          <p style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">LATEST HEMOGLOBIN</p>
+          <h3 style="font-size: 1.8rem; font-weight: 700; margin-top: 0.25rem; color: var(--emerald-primary);">13.5 g/dL</h3>
+          <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">Normalized (Ref 13.0-17.0)</p>
+        </div>
+      </div>
+
+      <!-- Main Central Patient Record & Doctor Consents -->
+      <div class="grid-2">
+        <!-- Reports Timeline -->
+        <div class="glass-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 700;">Central Medical Records Timeline</h3>
+            <span class="badge badge-cyan">Patient Central ID: PX123456</span>
+          </div>
+
+          <div id="patient-reports-list">
+            <!-- Dynamically Rendered Reports -->
+          </div>
+        </div>
+
+        <!-- Manage Doctor Access (Gate 2 Scoped Consents) -->
+        <div class="glass-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <div>
+              <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 700;">Doctor Access Control</h3>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">Section 6: Consent as a Scoped, Expiring, Revocable Record</p>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Doctor</th>
+                  <th>Scope</th>
+                  <th>Future Reports</th>
+                  <th>Expiry</th>
+                  <th>Status / Action</th>
+                </tr>
+              </thead>
+              <tbody id="doctor-consents-tbody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ======================================================= -->
+    <!-- VIEW 2: LABORATORY PORTAL (Apex Diagnostics)            -->
+    <!-- ======================================================= -->
+    <section id="view-lab" class="view-section" style="display: none;">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">
+            <span>Laboratory Workflow & Ingestion Portal</span>
+            <span class="badge badge-cyan">Apex Diagnostics (LAB001)</span>
+          </h2>
+          <p class="section-subtitle">Gate 1 Identity-Check Only Search & Per-Visit Consent Ingestion Handler (V1.1 Compliant)</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Gate 1 Identity Search & Consent Check -->
+        <div class="glass-card">
+          <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+            Step 1: Patient Identity Verification (Layer A)
+          </h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            <strong>Rule 4 Enforced:</strong> Searching Patient ID returns ONLY masked identity verification fields. Does NOT return phone, address, or reports from other labs!
+          </p>
+
+          <div style="display: flex; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <input type="text" id="lab-search-input" class="form-input" value="PX123456" placeholder="Enter Patient ID (e.g. PX123456)">
+            <button class="btn btn-primary" onclick="performLabPatientSearch()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              Search ID
+            </button>
+          </div>
+
+          <div id="lab-identity-result" style="background: rgba(6, 9, 17, 0.6); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 1.25rem;">
+            <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center;">Perform a Patient ID search above to test Rule 4 privacy boundaries.</p>
+          </div>
+
+          <!-- Gate 1 Layer B Consent Input -->
+          <div style="margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid var(--border-glass);">
+            <h4 style="font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">
+              Step 2: Per-Visit Consent Gate (Layer B)
+            </h4>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+              <strong>Rule 7 Enforced:</strong> Lab cannot attach a report without a fresh patient visit OTP or QR check-in token.
+            </p>
+            <div style="display: flex; gap: 0.75rem;">
+              <input type="text" id="lab-otp-input" class="form-input" value="849210" placeholder="Enter Patient 6-digit OTP (e.g. 849210)">
+              <button class="btn" onclick="verifyVisitConsent()">Verify Consent</button>
+            </div>
+            <p id="otp-verify-status" style="font-size: 0.8rem; margin-top: 0.5rem; font-weight: 600;"></p>
+          </div>
+        </div>
+
+        <!-- Report Upload & Versioning Desk -->
+        <div class="glass-card">
+          <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+            Step 3: Upload Report PDF / Run Processing
+          </h3>
+
+          <div style="border: 2px dashed var(--border-glass); border-radius: var(--radius-md); padding: 2rem; text-align: center; background: rgba(6, 9, 17, 0.4); margin-bottom: 1.25rem;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="1.5" style="margin-bottom: 0.75rem;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <h4 style="font-size: 1rem; font-weight: 600;">Drag and drop Blood Report PDF</h4>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Supports text PDFs, scanned PDFs, or CBC images</p>
+            
+            <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 0.5rem;">
+              <button class="btn btn-primary" onclick="simulateLabUpload('sample.pdf')">Upload sample.pdf</button>
+              <button class="btn" onclick="simulateLabUpload('sample2.pdf')">Upload sample2.pdf</button>
+            </div>
+          </div>
+
+          <div id="upload-processing-preview" style="display: none; background: rgba(6, 9, 17, 0.7); border: 1px solid var(--border-highlight); border-radius: var(--radius-sm); padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <strong style="color: var(--cyan-primary); font-size: 0.9rem;">Processing Complete • Ready for Review</strong>
+              <span class="badge badge-amber">Status: PENDING</span>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Parsed 6 CBC Biomarkers • Patient Context Resolved (Male, 31 yrs)</p>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="publishReport()">Publish to Central Record</button>
+              <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="correctReportVersion()">Create Corrected Version (V2)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ======================================================= -->
+    <!-- VIEW 3: DOCTOR PORTAL (Dr. Aris Thorne)                 -->
+    <!-- ======================================================= -->
+    <section id="view-doctor" class="view-section" style="display: none;">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">
+            <span>Doctor Clinical Dashboard</span>
+            <span class="badge badge-violet">Dr. Aris Thorne (Hematology)</span>
+          </h2>
+          <p class="section-subtitle">Unified Patient Medical History, Multi-Lab Aggregation & AI Diagnostic Findings</p>
+        </div>
+        <button class="btn btn-primary" onclick="openCompareModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Compare Reports Side-by-Side
+        </button>
+      </div>
+
+      <!-- Biomarker Trend Chart -->
+      <div class="glass-card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div>
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700;">Longitudinal Biomarker Trend Analysis</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Tracking Hemoglobin, Platelets, and RBC across multiple laboratories over time</p>
+          </div>
+          <span class="badge badge-cyan">3 Lab Reports Aggregated</span>
+        </div>
+        <div style="height: 260px; width: 100%;">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
+
+      <!-- AI Clinical Findings & Structured Observations -->
+      <div class="grid-2">
+        <div class="glass-card">
+          <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+            AI Pattern Detection & Clinical Evidence
+          </h3>
+
+          <div class="finding-card high">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <h4 style="font-size: 0.95rem; font-weight: 700; color: #ffffff;">Microcytic Hypochromic Anemia Pattern</h4>
+              <span class="badge badge-rose">Confidence 88%</span>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0.5rem 0;">
+              Simultaneous reduction in Hemoglobin (10.0 g/dL), RBC (3.8 M/uL), Hematocrit (31.5%), and MCV (74 fL) detected in initial Lab A report.
+            </p>
+            <div style="font-size: 0.75rem; color: var(--emerald-primary); font-weight: 600;">
+              Status: Resolved in follow-up report RPT-103 (Hb 13.5 g/dL)
+            </div>
+          </div>
+
+          <div class="finding-card moderate">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <h4 style="font-size: 0.95rem; font-weight: 700; color: #ffffff;">Transient Mild Thrombocytopenia</h4>
+              <span class="badge badge-amber">Confidence 76%</span>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0.5rem 0;">
+              Platelet count 116 K/uL in March 2026. Normalized to 210 K/uL in September 2026.
+            </p>
+          </div>
+        </div>
+
+        <!-- Authorized Reports Record -->
+        <div class="glass-card">
+          <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+            Patient Record (PX123456) • Active Grant Scope
+          </h3>
+
+          <div id="doctor-reports-list">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ======================================================= -->
+    <!-- VIEW 4: AUDIT & SECURITY PORTAL                         -->
+    <!-- ======================================================= -->
+    <section id="view-admin" class="view-section" style="display: none;">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">
+            <span>Platform Governance & Security Audit</span>
+            <span class="badge badge-violet">Rule 14 Access Log Compliant</span>
+          </h2>
+          <p class="section-subtitle">Every lookup, search, view, and upload event logged permanently against the actor.</p>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+          Platform Security Audit Log (access_log Table)
+        </h3>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Actor Type</th>
+                <th>Actor Name</th>
+                <th>Patient ID</th>
+                <th>Action</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="audit-log-tbody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ======================================================= -->
+    <!-- VIEW 5: LIVE AI CLINICAL PIPELINE ENGINE                -->
+    <!-- ======================================================= -->
+    <section id="view-pipeline" class="view-section" style="display: none;">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">
+            <span>Clinical Pipeline Engine Playground</span>
+            <span class="badge badge-cyan">Layer 4 Analysis Engine</span>
+          </h2>
+          <p class="section-subtitle">Interactive step-by-step visual execution of Python extraction & knowledge pattern matcher.</p>
+        </div>
+        <button class="btn btn-primary" onclick="runInteractivePipeline()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Execute Live Clinical Pipeline
+        </button>
+      </div>
+
+      <!-- Pipeline Stepper -->
+      <div class="pipeline-stepper">
+        <div class="step-node completed" id="pstep-1">1</div>
+        <div class="step-node active" id="pstep-2">2</div>
+        <div class="step-node" id="pstep-3">3</div>
+        <div class="step-node" id="pstep-4">4</div>
+        <div class="step-node" id="pstep-5">5</div>
+        <div class="step-node" id="pstep-6">6</div>
+        <div class="step-node" id="pstep-7">7</div>
+        <div class="step-node" id="pstep-8">8</div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 1.5rem;">
+        <div class="glass-card">
+          <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+            Pipeline Stage Diagnostics
+          </h3>
+          <div id="pipeline-stage-info" style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
+            Select "Execute Live Clinical Pipeline" above to run raw PDF text extraction, validation, plausibility check, and knowledge pattern matching.
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+            Raw Execution Output (JSON)
+          </h3>
+          <pre class="code-block" id="pipeline-json-output">// Waiting for pipeline execution...</pre>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ========================================================= -->
+  <!-- MODALS                                                    -->
+  <!-- ========================================================= -->
+
+  <!-- Modal: Generate Visit OTP -->
+  <div class="modal-overlay" id="modal-visit-otp">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700;">Generate Visit Consent Code</h3>
+        <button class="btn" style="padding: 0.3rem 0.6rem;" onclick="closeModal('modal-visit-otp')">✕</button>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">Show this 6-digit OTP or QR code to the laboratory receptionist at check-in. It grants a 24-hour single-visit report upload window for your central record (PX123456).</p>
+        
+        <div style="background: rgba(6, 182, 212, 0.1); border: 2px dashed var(--cyan-primary); border-radius: var(--radius-md); padding: 1.5rem; display: inline-block; margin-bottom: 1rem;">
+          <span style="font-family: 'Outfit', sans-serif; font-size: 2.5rem; font-weight: 800; letter-spacing: 0.25em; color: var(--cyan-primary);" id="otp-code-display">849-210</span>
+        </div>
+
+        <p style="font-size: 0.8rem; color: var(--amber-primary); font-weight: 600;">Expires in 23h 59m • Auto-closes upload window</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeModal('modal-visit-otp')">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Grant Doctor Access -->
+  <div class="modal-overlay" id="modal-grant-doctor">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700;">Grant Scoped Doctor Access</h3>
+        <button class="btn" style="padding: 0.3rem 0.6rem;" onclick="closeModal('modal-grant-doctor')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Select Doctor</label>
+          <select id="grant-doctor-select" class="form-select">
+            <option value="DOC001">Dr. Aris Thorne (Hematology)</option>
+            <option value="DOC002">Dr. Sarah Jenkins (General Physician)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Report Scope</label>
+          <select id="grant-scope-select" class="form-select">
+            <option value="all_reports">All Available Reports</option>
+            <option value="specific_report_ids">Only Specific Reports (RPT-101, RPT-103)</option>
+            <option value="date_range">Date Range Snapshot</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Include Future Reports?</label>
+          <select id="grant-future-select" class="form-select">
+            <option value="false" selected>No (Snapshot of current reports only - Recommended)</option>
+            <option value="true">Yes (Allow ongoing access to future reports)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Access Duration</label>
+          <select id="grant-duration-select" class="form-select">
+            <option value="6_months">6 Months</option>
+            <option value="12_months">12 Months</option>
+            <option value="until_revoked">Until I Revoke</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeModal('modal-grant-doctor')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitDoctorGrant()">Create Consent Record</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Compare Reports Side-by-Side -->
+  <div class="modal-overlay" id="modal-compare-reports">
+    <div class="modal-container" style="max-width: 900px;">
+      <div class="modal-header">
+        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700;">Multi-Lab Report Comparison</h3>
+        <button class="btn" style="padding: 0.3rem 0.6rem;" onclick="closeModal('modal-compare-reports')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>CBC Biomarker</th>
+                <th>Lab A (Apex) • Mar 2026</th>
+                <th>Lab B (Metro) • Jun 2026</th>
+                <th>Lab A (Apex V2) • Sep 2026</th>
+                <th>Reference Range</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Hemoglobin (Hb)</strong></td>
+                <td><span class="badge badge-rose">10.0 g/dL</span></td>
+                <td><span class="badge badge-amber">11.2 g/dL</span></td>
+                <td><span class="badge badge-emerald">13.5 g/dL</span></td>
+                <td>13.0 - 17.0 g/dL</td>
+              </tr>
+              <tr>
+                <td><strong>RBC Count</strong></td>
+                <td><span class="badge badge-rose">3.8 M/uL</span></td>
+                <td><span class="badge badge-amber">4.1 M/uL</span></td>
+                <td><span class="badge badge-emerald">4.7 M/uL</span></td>
+                <td>4.5 - 5.9 M/uL</td>
+              </tr>
+              <tr>
+                <td><strong>Platelets</strong></td>
+                <td><span class="badge badge-amber">116 K/uL</span></td>
+                <td><span class="badge badge-amber">142 K/uL</span></td>
+                <td><span class="badge badge-emerald">210 K/uL</span></td>
+                <td>150 - 450 K/uL</td>
+              </tr>
+              <tr>
+                <td><strong>WBC Count</strong></td>
+                <td><span class="badge badge-emerald">6.5 K/uL</span></td>
+                <td><span class="badge badge-emerald">7.1 K/uL</span></td>
+                <td><span class="badge badge-emerald">5.9 K/uL</span></td>
+                <td>4.5 - 11.0 K/uL</td>
+              </tr>
+              <tr>
+                <td><strong>MCV</strong></td>
+                <td><span class="badge badge-rose">74.0 fL</span></td>
+                <td><span class="badge badge-amber">78.5 fL</span></td>
+                <td><span class="badge badge-emerald">86.0 fL</span></td>
+                <td>80 - 100 fL</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeModal('modal-compare-reports')">Close Comparison</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Application JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
